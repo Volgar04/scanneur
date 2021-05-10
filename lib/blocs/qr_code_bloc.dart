@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 
 part 'qr_code_event.dart';
 part 'qr_code_state.dart';
@@ -25,18 +23,16 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
     if (data != null) {
       int firstCode;
       int secondCode;
-      int thirdCode;
 
       try {
-        firstCode = _getCode(data, 0, 3);
+        firstCode = _getCode(data, 1, 3);
         secondCode = _getCode(data, 17, 19);
-        thirdCode = _getCode(data, 25, 27);
       } catch (_) {
         yield QrCodeDummyState();
         yield QrCodeError(message: 'Une erreur est survenue.', data: data);
       }
 
-      if (firstCode == 01 && secondCode == 17 && thirdCode == 10) {
+      if (firstCode == 01 && secondCode == 17) {
         try {
           String gtin = data.substring(3, 17);
           String expirationDate = data.substring(19, 25);
@@ -53,7 +49,7 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
           yield QrCodeDummyState();
           yield QrCodeError(message: 'Une erreur est survenue.', data: data);
         }
-      } else if (firstCode == 01 && secondCode == 10 && thirdCode == 17) {
+      } else if (firstCode == 01 && secondCode == 10) {
         try {
           String gtin = data.substring(3, 17);
           String expirationDate = data.substring(data.length - 6, data.length);
